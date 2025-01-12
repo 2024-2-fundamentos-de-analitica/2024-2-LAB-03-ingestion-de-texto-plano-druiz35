@@ -3,7 +3,7 @@ Escriba el codigo que ejecute la accion solicitada en cada pregunta.
 """
 
 # pylint: disable=import-outside-toplevel
-
+import pandas as pd
 
 def pregunta_01():
     """
@@ -18,3 +18,37 @@ def pregunta_01():
 
 
     """
+    df_dict = {
+        "cluster": [],
+        "cantidad_de_palabras_clave": [],
+        "porcentaje_de_palabras_clave": [],
+        "principales_palabras_clave": []
+    }
+    with open("./files/input/clusters_report.txt", "r") as f:
+        lines = list(f.readlines())
+        lines = [line.strip("\n").replace(" %", "").split() for line in lines]
+        cluster = int()
+        num_of_keywords = int()
+        percentage = float()
+        main_keywords = ""
+        for line in lines[4:]:
+            if len(line) == 0:
+                df_dict["cluster"].append(cluster)
+                df_dict["cantidad_de_palabras_clave"].append(num_of_keywords)
+                df_dict["porcentaje_de_palabras_clave"].append(percentage)
+                df_dict["principales_palabras_clave"].append(main_keywords[:-1])
+                cluster = int()
+                num_of_keywords = int()
+                percentage = float()
+                main_keywords = ""
+                continue
+            try:
+                cluster = int(line[0])
+                num_of_keywords = int(line[1])
+                percentage = float(line[2].replace(",", "."))
+                for word in line[3:]:
+                    main_keywords += word.replace(".", "") + " "
+            except:
+                for word in line:
+                    main_keywords += word.replace(".", "") + " "
+        return pd.DataFrame().from_dict(df_dict)
